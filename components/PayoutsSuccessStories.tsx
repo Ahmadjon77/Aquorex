@@ -1,130 +1,167 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { useRef, useEffect, useState } from 'react'
+
+const payouts = [
+  { name: 'Jen', amount: '$1,565.83' },
+  { name: 'Madshark', amount: '$1,356.83' },
+  { name: 'Loth K', amount: '$495.00' },
+  { name: 'Kim Ronk', amount: '$1,296.00' },
+  { name: 'Abir Gupts', amount: '$1,156.87' },
+  { name: 'Samrat Roy', amount: '$145.50' },
+  { name: 'Davis', amount: '$692.84' },
+  { name: 'Mike', amount: '$1,565.35' },
+  { name: 'Dev', amount: '$1,900.50' },
+  { name: 'Divyesh Patel', amount: '$50.00' },
+  { name: 'Aditya R', amount: '$256.00' },
+  { name: 'Julia', amount: '$785.00' },
+  { name: 'Albert', amount: '$750.00' },
+  { name: 'Ryan', amount: '$589.40' },
+]
+
+// Animated counter hook
+function useCounter(end: number, duration: number = 2000, start: boolean = false) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!start) return
+    let startTime: number | null = null
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.floor(eased * end))
+      if (progress < 1) requestAnimationFrame(step)
+      else setCount(end)
+    }
+    requestAnimationFrame(step)
+  }, [start, end, duration])
+  return count
+}
+
+function StatCard({ value, suffix, label, duration }: {
+  value: number
+  suffix: string
+  label: string
+  duration?: number
+}) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true })
+  const count = useCounter(value, duration ?? 2000, inView)
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-4xl md:text-5xl font-black text-white mb-1">
+        {suffix === '$' ? '$' : ''}{count.toLocaleString()}{suffix !== '$' ? suffix : ''}
+      </div>
+      <div className="text-gray-400 text-sm">{label}</div>
+    </div>
+  )
+}
+
+function PayoutCard({ name, amount }: { name: string; amount: string }) {
+  return (
+    <div className="flex items-center gap-3 bg-slate-900/70 backdrop-blur border border-slate-700/50 rounded-xl px-4 py-3 min-w-[210px] shrink-0">
+      {/* MT5 style card thumbnail */}
+      <div className="w-16 h-11 rounded-lg bg-gradient-to-br from-blue-900 to-slate-900 border border-blue-700/30 flex items-center justify-center overflow-hidden shrink-0 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+        <div className="text-center z-10">
+          <div className="text-cyan-400/80 text-[8px] font-bold">AQUOREX</div>
+          <div className="text-white text-[10px] font-black">{amount}</div>
+        </div>
+      </div>
+      <div>
+        <div className="text-white font-bold text-sm">{name}</div>
+        <div className="text-cyan-400 font-black text-base">{amount}</div>
+      </div>
+    </div>
+  )
+}
+
+// Laurel wreath SVG
+function LaurelBadge({ text }: { text: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-24 h-20 flex items-center justify-center">
+        {/* Left laurel */}
+        <svg className="absolute left-0 top-0 h-full opacity-80" viewBox="0 0 30 80" fill="none">
+          {[10,16,22,28,34,40,46,52,58].map((y, i) => (
+            <ellipse key={i} cx="20" cy={y} rx="10" ry="5" fill="white" opacity={0.15 + i*0.05} transform={`rotate(-25 20 ${y})`} />
+          ))}
+        </svg>
+        {/* Right laurel */}
+        <svg className="absolute right-0 top-0 h-full opacity-80" viewBox="0 0 30 80" fill="none">
+          {[10,16,22,28,34,40,46,52,58].map((y, i) => (
+            <ellipse key={i} cx="10" cy={y} rx="10" ry="5" fill="white" opacity={0.15 + i*0.05} transform={`rotate(25 10 ${y})`} />
+          ))}
+        </svg>
+        {/* Center text */}
+        <div className="z-10 text-center">
+          <div className="text-white font-black text-xs leading-tight">{text}</div>
+          <div className="text-gray-400 text-[10px] mt-0.5">2025</div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function PayoutsSuccessStories() {
-  const traders = [
-    { country: 'India', name: 'Trader 1', earnings: '$1345', profit: '$1345' },
-    { country: 'India', name: 'Trader 2', earnings: '$1900.50', profit: '$1900.50' },
-    { country: 'India', name: 'Trader 3', earnings: '$50.00', profit: '$50.00' },
-    { country: 'India', name: 'Trader 4', earnings: '$256.00', profit: '$256.00' },
-    { country: 'Germany', name: 'Trader 5', earnings: '$785.00', profit: '$785.00' },
-    { country: 'Netherlands', name: 'Trader 6', earnings: '$750', profit: '$750' },
-    { country: 'Canada', name: 'Trader 7', earnings: '$695', profit: '$695' },
-    { country: 'Germany', name: 'Trader 8', earnings: '$95.00', profit: '$95.00' },
-    { country: 'South Korea', name: 'Trader 9', earnings: '$1296.00', profit: '$1296.00' },
-    { country: 'India', name: 'Trader 10', earnings: '$1156.87', profit: '$1156.87' },
-    { country: 'India', name: 'Trader 11', earnings: '$145.50', profit: '$145.50' },
-    { country: 'Canada', name: 'Trader 12', earnings: '$589.40', profit: '$589.40' },
-  ]
+  const doubled = [...payouts, ...payouts]
 
   return (
-    <section className="relative bg-gradient-to-b from-slate-950 via-slate-950 to-slate-950 py-20 overflow-hidden">
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-1/2 w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-3xl -translate-x-1/2"></div>
+    <section className="bg-slate-950 py-8 overflow-hidden">
+      {/* ── Scrolling payout cards ── */}
+      <div className="relative mb-10">
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
+        <motion.div
+          animate={{ x: [0, -220 * payouts.length] }}
+          transition={{ x: { duration: 30, repeat: Infinity, ease: 'linear' } }}
+          className="flex gap-3 w-max"
+        >
+          {doubled.map((p, i) => (
+            <PayoutCard key={i} {...p} />
+          ))}
+        </motion.div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Background Globe Animation */}
-        <motion.div
-          animate={{ y: [0, -20, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 opacity-10 pointer-events-none"
-        >
-          <div className="w-full h-full rounded-full border border-cyan-500/30">
-            <div className="w-full h-full rounded-full border border-cyan-500/20" style={{ transform: 'scale(0.7)' }}></div>
+      {/* ── Stats banner ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-2xl bg-gradient-to-r from-blue-950/80 via-blue-900/40 to-blue-950/80 border border-blue-800/30 px-8 py-12">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+
+            {/* $500k+ */}
+            <StatCard value={500} suffix="k+" label="Paid to Traders" duration={2000} />
+
+            {/* 12k */}
+            <StatCard value={12} suffix="k" label="Traders" duration={1500} />
+
+            {/* 130+ */}
+            <StatCard value={130} suffix="+" label="Countries Served" duration={1800} />
+
+            {/* BEST PROPFIRM */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex justify-center"
+            >
+              <LaurelBadge text={"BEST\nPROPFIRM"} />
+            </motion.div>
+
+            {/* FASTER PAYOUTS */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex justify-center"
+            >
+              <LaurelBadge text={"FASTER\nPAYOUTS"} />
+            </motion.div>
+
           </div>
-        </motion.div>
-
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6">
-            Payouts & <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Success Stories</span>
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Trade the way you want, how you want, for as long as you want.
-          </p>
-        </motion.div>
-
-        {/* $500K+ Container */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative rounded-3xl border border-blue-500/40 bg-gradient-to-br from-blue-600/30 to-blue-700/20 backdrop-blur-sm p-12 mb-8"
-        >
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/0 via-transparent to-blue-500/0"></div>
-
-          <div className="relative z-10">
-            <div className="text-center mb-12">
-              <motion.h3
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-6xl md:text-7xl font-black text-white mb-2"
-              >
-                $500K <span className="text-cyan-400">Plus</span>
-              </motion.h3>
-              <p className="text-xl text-cyan-400 font-bold">
-                Earned by Traders Globally at Aquorex
-              </p>
-            </div>
-
-            {/* Traders Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {traders.map((trader, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  whileHover={{ y: -5 }}
-                  className="group relative"
-                >
-                  <div className="relative rounded-xl border border-blue-400/30 bg-blue-900/40 backdrop-blur p-4 hover:border-cyan-400/50 transition-all overflow-hidden h-full">
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/0 to-blue-400/0 group-hover:from-cyan-400/10 group-hover:to-blue-400/10 transition-all"></div>
-
-                    <div className="relative z-10">
-                      <div className="text-xs text-gray-400 mb-1 opacity-70">{trader.country}</div>
-                      <div className="text-2xl font-black text-cyan-400 mb-2">{trader.earnings}</div>
-
-                      {/* Mini Chart */}
-                      <div className="h-10 flex items-center gap-1">
-                        {[...Array(8)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            animate={{ height: Math.random() * 100 + '%' }}
-                            transition={{ duration: 3, repeat: Infinity, delay: i * 0.1 }}
-                            className="flex-1 bg-gradient-to-t from-cyan-400/60 to-blue-400/40 rounded-sm opacity-60"
-                          ></motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Bottom Text */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center text-gray-400 text-sm max-w-2xl mx-auto"
-        >
-          Real stories from real traders—hear firsthand why so many trust Aquorex and for their trading journey, from evaluations to success in the markets.
-        </motion.p>
+        </div>
       </div>
     </section>
   )

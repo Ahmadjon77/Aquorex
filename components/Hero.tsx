@@ -6,11 +6,11 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 const paymentMethods = [
-  { src: '/images/visa.png', alt: 'Visa' },
-  { src: '/images/mastercard.png', alt: 'Mastercard' },
-  { src: '/images/btc.png', alt: 'Bitcoin' },
-  { src: '/images/usdt.png', alt: 'USDT' },
-  { src: '/images/usdc.png', alt: 'USDC' },
+  { src: '/images/visa.png', alt: 'Visa', bg: 'bg-blue-900/80' },
+  { src: '/images/mastercard.png', alt: 'Mastercard', bg: 'bg-gray-900/80' },
+  { src: '/images/btc.png', alt: 'Bitcoin', bg: 'bg-orange-950/80' },
+  { src: '/images/usdt.png', alt: 'USDT', bg: 'bg-emerald-950/80' },
+  { src: '/images/usdc.png', alt: 'USDC', bg: 'bg-blue-950/80' },
 ]
 
 const stats = [
@@ -89,7 +89,7 @@ export function Hero() {
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.10, delay: 0.3 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push('/auth/register')}
@@ -100,30 +100,26 @@ export function Hero() {
             </motion.button>
 
             {/* Payment Methods */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex items-center gap-4 flex-wrap"
-            >
-              <span className="text-gray-400 text-sm">We accept:</span>
-              <div className="flex gap-2 flex-wrap">
-                {paymentMethods.map((pm) => (
-                  <div
-                    key={pm.alt}
-                    className="w-14 h-10 rounded-lg bg-white/10 backdrop-blur border border-white/10 flex items-center justify-center p-1.5"
-                  >
-                    <Image
-                      src={pm.src}
-                      alt={pm.alt}
-                      width={40}
-                      height={28}
-                      className="object-contain w-full h-full"
-                    />
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+          <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex items-center gap-4 flex-wrap"
+>
+        <span className="text-gray-400 text-sm font-medium">We accept:</span>
+        <div className="flex gap-2 flex-wrap">
+          {paymentMethods.map((pm) => (
+          <motion.div
+          key={pm.alt}
+          whileHover={{ scale: 1.1, y: -3 }}
+          transition={{ duration: 0.15 }}
+          className={`w-16 h-11 rounded-xl ${pm.bg} border border-white/10 flex items-center justify-center p-2 hover:border-cyan-500/40 transition-all cursor-pointer shadow-lg`}
+    >
+      <Image src={pm.src} alt={pm.alt} width={44} height={32} className="object-contain w-full h-full" />
+      </motion.div>
+))}
+  </div>
+          </motion.div>
           </motion.div>
 
           {/* ── RIGHT ── */}
@@ -151,7 +147,7 @@ export function Hero() {
                   key={i}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 + i * 0.1 }}
+                  transition={{ duration: 0.15}}
                   whileHover={{ y: -3 }}
                   className="flex flex-col items-center gap-1.5 bg-black/30 backdrop-blur rounded-xl border border-slate-700/50 p-3 text-center"
                 >

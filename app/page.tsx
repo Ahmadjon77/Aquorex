@@ -6,20 +6,22 @@ import { DiscordCommunity } from '@/components/DiscordCommunity'
 import { ProfitCalculator } from '@/components/ProfitCalculator'
 import { FAQ } from '@/components/FAQ'
 import { Footer } from '@/components/Footer'
+import { ComparisonTable } from '@/components/ComparisonTable'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-950">
       <AnnouncementBar />
       <Header />
-      <main>
-        <Hero />
-        <TradingModels />
-        <PayoutsSuccessStories />
-        <DiscordCommunity />
-        <ProfitCalculator />
-        <FAQ />
-      </main>
+    <main>
+      <Hero />
+      <PayoutsSuccessStories />
+      <TradingModels />
+      <ComparisonTable />
+      <DiscordCommunity />
+      <ProfitCalculator />
+      <FAQ />
+    </main>
       <Footer />
     </div>
   )
